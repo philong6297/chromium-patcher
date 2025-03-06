@@ -10,14 +10,14 @@ __all__ = ["command_generate_patches"]
 _logger = logging.getLogger(__name__)
 
 
-def command_generate_patches():
+def command_generate_patches(config: ProgramConfig) -> None:
     repo_dirs_list = "  - ".join(
-        f"{'/'.join(path)}{os.linesep}" for path in ProgramConfig.REPO_DIRS
+        f"{'/'.join(path)}{os.linesep}" for path in config.REPO_DIRS
     )
 
     _logger.info(
-        f"Generate patches into {ProgramConfig.PATCHES_DIR.as_posix()}{os.linesep}"
-        f"for Chromium-based project {ProgramConfig.CHROMIUM_SRC_DIR.as_posix()}{os.linesep}"
+        f"Generate patches from {config.PATCHES_DIR.as_posix()}{os.linesep}"
+        f"for Chromium-based project {config.CHROMIUM_SRC_DIR.as_posix()}{os.linesep}"
         f"Repository directories:{os.linesep}"
         f"{repo_dirs_list}"
     )
@@ -25,10 +25,10 @@ def command_generate_patches():
     try:
         repo_mappings = [
             (
-                ProgramConfig.CHROMIUM_SRC_DIR.joinpath(*path),
-                ProgramConfig.PATCHES_DIR.joinpath(*path),
+                config.CHROMIUM_SRC_DIR.joinpath(*path),
+                config.PATCHES_DIR.joinpath(*path),
             )
-            for path in ProgramConfig.REPO_DIRS
+            for path in config.REPO_DIRS
         ]
 
         for repo_dir, patch_dir in repo_mappings:

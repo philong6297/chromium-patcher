@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from config import ProgramConfig
-from util import calculate_file_checksum, run_git
+from src.util import calculate_file_checksum, run_git
 
 from .patch_apply_status import PatchApplyData as ApplyData
 from .patch_apply_status import PatchApplyReason as ApplyReason

@@ -1,0 +1,18 @@
+include = [
+  "pyproject.toml",
+]
+
+[formatting]
+array_auto_collapse = false
+compact_array = false
+column_width = 100
+# two space
+indent_string = "  "
+line_width = 100
+trailing_newline = true
+# sort keys that are not separated by blank line
+reorder_keys = true
+reorder_arrays = true
+allowed_blank_lines = 2
+# use unix line endings
+crlf = false

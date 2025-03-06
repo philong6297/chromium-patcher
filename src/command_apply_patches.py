@@ -60,24 +60,26 @@ def _print_report(result: List[FileChangeResult]) -> None:
             _print_file_change_report(file_result)
 
 
-def command_apply_patches(should_print_report: bool = False) -> None:
+def command_apply_patches(
+    config: ProgramConfig, should_print_report: bool = False
+) -> None:
     repo_dirs_list = "  - ".join(
-        f"{'/'.join(path)}{os.linesep}" for path in ProgramConfig.REPO_DIRS
+        f"{'/'.join(path)}{os.linesep}" for path in config.REPO_DIRS
     )
 
     _logger.info(
-        f"Apply patches from {ProgramConfig.PATCHES_DIR.as_posix()}{os.linesep}"
-        f"for Chromium-based project {ProgramConfig.CHROMIUM_SRC_DIR.as_posix()}{os.linesep}"
+        f"Apply patches from {config.PATCHES_DIR.as_posix()}{os.linesep}"
+        f"for Chromium-based project {config.CHROMIUM_SRC_DIR.as_posix()}{os.linesep}"
         f"Repository directories:{os.linesep}"
         f"{repo_dirs_list}"
     )
 
     repo_mappings = [
         (
-            ProgramConfig.CHROMIUM_SRC_DIR.joinpath(*path),
-            ProgramConfig.PATCHES_DIR.joinpath(*path),
+            config.CHROMIUM_SRC_DIR.joinpath(*path),
+            config.PATCHES_DIR.joinpath(*path),
         )
-        for path in ProgramConfig.REPO_DIRS
+        for path in config.REPO_DIRS
     ]
 
     result: List[FileChangeResult] = []

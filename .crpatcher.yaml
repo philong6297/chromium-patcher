@@ -1,0 +1,14 @@
+# Chromium Patcher Configuration
+
+# Paths
+chromium_src_dir: "src"  # Relative to this config file
+patches_dir: "src/patches"  # Relative to this config file
+
+# File extensions and formats
+patch_file_ext: "patch"
+patchinfo_file_ext: "patchinfo"
+patch_filename_separator: "-"  # Used to convert paths to patch filenames
+
+# Repository directories to patch
+repo_dirs:
+  - ["third_party", "search_engines_data", "resources"]

@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Callable, List, Optional
 
 from config import ProgramConfig
-from util import run_git
+from src.util import run_git
 
 _logger = logging.getLogger(__name__)
 

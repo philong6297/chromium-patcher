@@ -1,0 +1,33 @@
+#:schema https://json.schemastore.org/pyproject.json
+
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools >= 61.0"]
+
+[project]
+
+authors = [{ name = "Phi-Long Le", email = "philong6297.play@gmail.com" }]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: Utilities",
+]
+description = "A tool to manage patches for submodules in Chromium-based project."
+keywords = ["chromium", "patches", "submodules"]
+license = { file = "LICENSE" }
+name = "crpatcher"
+readme = "README.md"
+urls = { Homepage = "https://github.com/philong6297/crpatcher" }
+version = "0.1.0"
+
+dependencies = [
+  "gitpython>=3.0",
+  "pyyaml>=6.0",
+]
+requires-python = ">=3.11"

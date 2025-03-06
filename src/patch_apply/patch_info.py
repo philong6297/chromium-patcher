@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
 from config import ProgramConfig
-from util import calculate_file_checksum, validate_dict_keys_match_dataclass
+from src.util import calculate_file_checksum, validate_dict_keys_match_dataclass
 
 _logger = logging.getLogger(__name__)
 
