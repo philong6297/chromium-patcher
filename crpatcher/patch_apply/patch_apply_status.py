@@ -1,42 +1,35 @@
+# Copyright 2025 Phi-Long Le. All rights reserved.
+# Use of this source code is governed by a MIT license that can be
+# found in the LICENSE file.
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import StrEnum
 from pathlib import Path
 from typing import List, Optional
 
-from src.config import ProgramConfig
+from crpatcher.config import ProgramConfig
+from crpatcher.patch_apply.patch_info import AffectedFileData
+from crpatcher.patch_apply.patch_info import PatchInfoStaleStatus as StaleStatus
 
-from .patch_info import AffectedFileData
-from .patch_info import PatchInfoStaleStatus as StaleStatus
 
+class PatchApplyReasonCreator:
+    """Why a patch file needs to be applied or was applied."""
 
-class PatchApplyReason(StrEnum):
-    """Why a patch needs to be applied or was applied."""
+    def __init__(self, config: ProgramConfig) -> None:
+        self._config = config
 
-    NO_PATCHINFO = (
-        f"No corresponding .{ProgramConfig.patchinfo_file_ext} file was found."
-    )
+    def patch_removed(self) -> str:
+        return (
+            f"The .{self._config.patch_file_ext} file was removed since last applied."
+        )
 
-    PATCHINFO_OUTDATED = (
-        f"The corresponding .{ProgramConfig.patchinfo_file_ext} file was unreadable "
-        f"or not in the correct schema version of {ProgramConfig.patchinfo_file_schema_version}."
-    )
-    PATCH_CHANGED = (
-        f"The .{ProgramConfig.patch_file_ext} file was modified since last applied."
-    )
-    PATCH_REMOVED = (
-        f"The .{ProgramConfig.patch_file_ext} file was removed since last applied."
-    )
-    SRC_CHANGED = "The target file was modified since the patch was last applied."
-
-    @staticmethod
-    def from_stale_status(status: StaleStatus) -> str:
+    def from_patchinfo_stale_status(self, status: StaleStatus) -> str:
         """Convert a StaleStatus to a PatchApplyReason message.
 
         Args:
             status: The stale status to convert
-
+            config: The program configuration
         Returns:
             string message explaining the status
 
@@ -47,13 +40,16 @@ class PatchApplyReason(StrEnum):
             case StaleStatus.NONE:
                 return "None"
             case StaleStatus.NO_PATCHINFO:
-                return PatchApplyReason.NO_PATCHINFO
+                return f"No corresponding .{self._config.patchinfo_file_ext} file was found."
             case StaleStatus.PATCHINFO_OUTDATED:
-                return PatchApplyReason.PATCHINFO_OUTDATED
+                return (
+                    f"The corresponding .{self._config.patchinfo_file_ext} file was unreadable "
+                    f"or not in the correct schema version of {self._config.patchinfo_file_schema_version}."
+                )
             case StaleStatus.PATCH_CHANGED:
-                return PatchApplyReason.PATCH_CHANGED
+                return f"The .{self._config.patch_file_ext} file was modified since last applied."
             case StaleStatus.SRC_CHANGED:
-                return PatchApplyReason.SRC_CHANGED
+                return "The target file was modified since the patch was last applied."
 
         raise ValueError(
             f"Unknown stale status: {status}. "
@@ -78,7 +74,7 @@ class PatchApplyData:
 
 @dataclass
 class PatchApplyResult:
-    """Result of a patch application operation.
+    """Result of a patch apply operation.
 
     Attributes:
         data: The original patch application data

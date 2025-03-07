@@ -11,7 +11,7 @@ import jsonschema.exceptions
 import yaml
 from jsonschema import validate
 
-from .schema import CRPATCHER_SCHEMA
+from crpatcher.config.schema import CRPATCHER_SCHEMA
 
 __all__ = [
     "ProgramConfig",

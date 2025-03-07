@@ -4,8 +4,8 @@ import sys
 from pathlib import Path
 from typing import List
 
-from src.config import ProgramConfig
-from src.patch_apply import FileChangeResult, GitPatcher
+from crpatcher.config import ProgramConfig
+from crpatcher.patch_apply import FileChangeResult, GitPatcher
 
 __all__ = ["command_apply_patches"]
 
@@ -85,7 +85,7 @@ def command_apply_patches(
     result: List[FileChangeResult] = []
 
     for repo_dir, patch_dir in repo_mappings:
-        patcher = GitPatcher(patch_dir=patch_dir, git_repo_dir=repo_dir)
+        patcher = GitPatcher(patch_dir=patch_dir, git_repo_dir=repo_dir, config=config)
         result.extend(patcher.apply_patches())
 
     if should_print_report:

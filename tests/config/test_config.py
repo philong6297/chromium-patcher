@@ -9,7 +9,11 @@ from typing import Any
 import pytest
 import yaml
 
-from src.config.config import ConfigValidationError, ConfigYAMLError, ProgramConfig
+from crpatcher.config.config import (
+    ConfigValidationError,
+    ConfigYAMLError,
+    ProgramConfig,
+)
 
 
 @pytest.fixture

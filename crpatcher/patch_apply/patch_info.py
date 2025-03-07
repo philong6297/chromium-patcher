@@ -1,3 +1,7 @@
+# Copyright 2025 Phi-Long Le. All rights reserved.
+# Use of this source code is governed by a MIT license that can be
+# found in the LICENSE file.
+
 from __future__ import annotations
 
 import json
@@ -7,8 +11,8 @@ from enum import IntEnum, unique
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
-from src.config import ProgramConfig
-from src.util import calculate_file_checksum, validate_dict_keys_match_dataclass
+from crpatcher.config import ProgramConfig
+from crpatcher.util import calculate_file_checksum, validate_dict_keys_match_dataclass
 
 _logger = logging.getLogger(__name__)
 

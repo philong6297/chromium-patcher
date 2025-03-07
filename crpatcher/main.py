@@ -7,9 +7,9 @@ import logging
 import sys
 from pathlib import Path
 
-from src.command_apply_patches import command_apply_patches
-from src.command_generate_patches import command_generate_patches
-from src.config import ProgramConfig
+from crpatcher.command_apply_patches import command_apply_patches
+from crpatcher.command_generate_patches import command_generate_patches
+from crpatcher.config import ProgramConfig
 
 
 def main() -> None:

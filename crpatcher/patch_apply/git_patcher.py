@@ -1,3 +1,7 @@
+# Copyright 2025 Phi-Long Le. All rights reserved.
+# Use of this source code is governed by a MIT license that can be
+# found in the LICENSE file.
+
 from __future__ import annotations
 
 import logging
@@ -7,14 +11,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
 
-from src.config import ProgramConfig
-from src.util import calculate_file_checksum, run_git
-
-from .patch_apply_status import PatchApplyData as ApplyData
-from .patch_apply_status import PatchApplyReason as ApplyReason
-from .patch_apply_status import PatchApplyResult as PatchResult
-from .patch_info import AffectedFileData, PatchInfo
-from .patch_info import PatchInfoStaleStatus as StaleStatus
+from crpatcher.config import ProgramConfig
+from crpatcher.patch_apply.patch_apply_status import PatchApplyData as ApplyData
+from crpatcher.patch_apply.patch_apply_status import PatchApplyReasonCreator
+from crpatcher.patch_apply.patch_apply_status import PatchApplyResult as PatchResult
+from crpatcher.patch_apply.patch_info import AffectedFileData, PatchInfo
+from crpatcher.patch_apply.patch_info import PatchInfoStaleStatus as StaleStatus
+from crpatcher.util import calculate_file_checksum, run_git
 
 _logger = logging.getLogger(__name__)
 
@@ -41,7 +44,7 @@ class FileChangeResult:
 class GitPatcher:
     """Handle applying patches to a Git repository."""
 
-    def __init__(self, patch_dir: Path, git_repo_dir: Path):
+    def __init__(self, patch_dir: Path, git_repo_dir: Path, config: ProgramConfig):
         """
         :param patch_dir_path: Path to the directory containing patch files.
         :param repo_path: Path to the Git repository.
@@ -49,6 +52,8 @@ class GitPatcher:
         self._patch_dir = patch_dir
         self._git_repo_dir = git_repo_dir
         self._APPLY_ARGS = ["--ignore-space-change", "--ignore-whitespace"]
+        self._config = config
+        self._reason_creator = PatchApplyReasonCreator(config)
 
     def apply_patches(self) -> List[FileChangeResult]:
         """
@@ -81,9 +86,9 @@ class GitPatcher:
                 f'Could not apply patches. Repo "{self._git_repo_dir}" is not a directory or does not exist'
             )
 
-        all_patch_files = self._patch_dir.glob(f"*.{ProgramConfig.patch_file_ext}")
+        all_patch_files = self._patch_dir.glob(f"*.{self._config.patch_file_ext}")
         all_patchinfo_files = self._patch_dir.glob(
-            f"*.{ProgramConfig.patchinfo_file_ext}"
+            f"*.{self._config.patchinfo_file_ext}"
         )
 
         patches_to_apply: List[ApplyData] = []
@@ -91,7 +96,7 @@ class GitPatcher:
 
         for patch_file in all_patch_files:
             expected_patchinfo_file = patch_file.with_suffix(
-                f".{ProgramConfig.patchinfo_file_ext}"
+                f".{self._config.patchinfo_file_ext}"
             )
 
             _logger.info(f"Checking .patchinfo file for {patch_file.as_posix()}:")
@@ -103,7 +108,9 @@ class GitPatcher:
             )
 
             if stale_status != StaleStatus.NONE:
-                apply_reason = ApplyReason.from_stale_status(stale_status)
+                apply_reason = self._reason_creator.from_patchinfo_stale_status(
+                    stale_status
+                )
                 _logger.info(f"----> Adding to TO_PATCH list, reason: {apply_reason}")
                 patches_to_apply.append(
                     ApplyData(
@@ -117,12 +124,12 @@ class GitPatcher:
 
         for patchinfo_file in all_patchinfo_files:
             expected_patch_file = patchinfo_file.with_suffix(
-                f".{ProgramConfig.patch_file_ext}"
+                f".{self._config.patch_file_ext}"
             )
             _logger.info(f"Reading .patch file for {patchinfo_file.as_posix()}:")
             if not expected_patch_file.is_file():
                 _logger.info(
-                    f"----> Adding to TO_RESET list, reason: {ApplyReason.PATCH_REMOVED}"
+                    f"----> Adding to TO_RESET list, reason: {self._reason_creator.patch_removed()}"
                 )
                 obsolete_patchinfo_files.append(patchinfo_file)
             else:
@@ -246,7 +253,7 @@ class GitPatcher:
                     continue
 
                 patchinfo = PatchInfo(
-                    schema_version=ProgramConfig.patchinfo_file_schema_version,
+                    schema_version=self._config.patchinfo_file_schema_version,
                     patch_checksum=patch_checksum,
                     affected_files=patch_result.affected_files,
                 )
@@ -370,9 +377,9 @@ class GitPatcher:
                 FileChangeResult(
                     file_path=self._git_repo_dir.joinpath(entry.file_relative_path),
                     patch_path=patchinfo_file.with_suffix(
-                        f".{ProgramConfig.patch_file_ext}"
+                        f".{self._config.patch_file_ext}"
                     ),
-                    reason=ApplyReason.PATCH_REMOVED,
+                    reason=self._reason_creator.patch_removed(),
                     error=None,
                     warning=None,
                 )

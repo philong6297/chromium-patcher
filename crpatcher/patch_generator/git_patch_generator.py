@@ -1,3 +1,7 @@
+# Copyright 2025 Phi-Long Le. All rights reserved.
+# Use of this source code is governed by a MIT license that can be
+# found in the LICENSE file.
+
 from __future__ import annotations
 
 import logging
@@ -5,8 +9,8 @@ import os
 from pathlib import Path
 from typing import Callable, List, Optional
 
-from src.config import ProgramConfig
-from src.util import run_git
+from crpatcher.config import ProgramConfig
+from crpatcher.util import run_git
 
 _logger = logging.getLogger(__name__)
 
@@ -79,7 +83,7 @@ class GitPatchGenerator:
         patch_filenames = [
             Path(relative_path)
             .as_posix()
-            .replace("/", ProgramConfig.PATCH_FILE_REPLACEMENT_SEPARATOR)
+            .replace("/", ProgramConfig.patch_file_replacement_separator)
             + f".{ProgramConfig.patch_file_ext}"
             for relative_path in modified_relative_paths
         ]

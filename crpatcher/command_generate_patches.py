@@ -2,8 +2,8 @@ import logging
 import os
 import sys
 
-from src.config import ProgramConfig
-from src.patch_generator import GitPatchGenerator
+from crpatcher.config import ProgramConfig
+from crpatcher.patch_generator import GitPatchGenerator
 
 __all__ = ["command_generate_patches"]
 
