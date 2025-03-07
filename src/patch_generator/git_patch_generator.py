@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 from typing import Callable, List, Optional
 
-from config import ProgramConfig
+from src.config import ProgramConfig
 from src.util import run_git
 
 _logger = logging.getLogger(__name__)
@@ -80,7 +80,7 @@ class GitPatchGenerator:
             Path(relative_path)
             .as_posix()
             .replace("/", ProgramConfig.PATCH_FILE_REPLACEMENT_SEPARATOR)
-            + f".{ProgramConfig.PATCH_FILE_EXT}"
+            + f".{ProgramConfig.patch_file_ext}"
             for relative_path in modified_relative_paths
         ]
 

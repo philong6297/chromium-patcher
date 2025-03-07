@@ -5,7 +5,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import List, Optional
 
-from config import ProgramConfig
+from src.config import ProgramConfig
 
 from .patch_info import AffectedFileData
 from .patch_info import PatchInfoStaleStatus as StaleStatus
@@ -15,18 +15,18 @@ class PatchApplyReason(StrEnum):
     """Why a patch needs to be applied or was applied."""
 
     NO_PATCHINFO = (
-        f"No corresponding .{ProgramConfig.PATCHINFO_FILE_EXT} file was found."
+        f"No corresponding .{ProgramConfig.patchinfo_file_ext} file was found."
     )
 
     PATCHINFO_OUTDATED = (
-        f"The corresponding .{ProgramConfig.PATCHINFO_FILE_EXT} file was unreadable "
-        f"or not in the correct schema version of {ProgramConfig.PATCHINFO_FILE_SCHEMA_VERSION}."
+        f"The corresponding .{ProgramConfig.patchinfo_file_ext} file was unreadable "
+        f"or not in the correct schema version of {ProgramConfig.patchinfo_file_schema_version}."
     )
     PATCH_CHANGED = (
-        f"The .{ProgramConfig.PATCH_FILE_EXT} file was modified since last applied."
+        f"The .{ProgramConfig.patch_file_ext} file was modified since last applied."
     )
     PATCH_REMOVED = (
-        f"The .{ProgramConfig.PATCH_FILE_EXT} file was removed since last applied."
+        f"The .{ProgramConfig.patch_file_ext} file was removed since last applied."
     )
     SRC_CHANGED = "The target file was modified since the patch was last applied."
 

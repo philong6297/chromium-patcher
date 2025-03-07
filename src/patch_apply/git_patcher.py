@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
 
-from config import ProgramConfig
+from src.config import ProgramConfig
 from src.util import calculate_file_checksum, run_git
 
 from .patch_apply_status import PatchApplyData as ApplyData
@@ -81,9 +81,9 @@ class GitPatcher:
                 f'Could not apply patches. Repo "{self._git_repo_dir}" is not a directory or does not exist'
             )
 
-        all_patch_files = self._patch_dir.glob(f"*.{ProgramConfig.PATCH_FILE_EXT}")
+        all_patch_files = self._patch_dir.glob(f"*.{ProgramConfig.patch_file_ext}")
         all_patchinfo_files = self._patch_dir.glob(
-            f"*.{ProgramConfig.PATCHINFO_FILE_EXT}"
+            f"*.{ProgramConfig.patchinfo_file_ext}"
         )
 
         patches_to_apply: List[ApplyData] = []
@@ -91,7 +91,7 @@ class GitPatcher:
 
         for patch_file in all_patch_files:
             expected_patchinfo_file = patch_file.with_suffix(
-                f".{ProgramConfig.PATCHINFO_FILE_EXT}"
+                f".{ProgramConfig.patchinfo_file_ext}"
             )
 
             _logger.info(f"Checking .patchinfo file for {patch_file.as_posix()}:")
@@ -117,7 +117,7 @@ class GitPatcher:
 
         for patchinfo_file in all_patchinfo_files:
             expected_patch_file = patchinfo_file.with_suffix(
-                f".{ProgramConfig.PATCH_FILE_EXT}"
+                f".{ProgramConfig.patch_file_ext}"
             )
             _logger.info(f"Reading .patch file for {patchinfo_file.as_posix()}:")
             if not expected_patch_file.is_file():
@@ -246,7 +246,7 @@ class GitPatcher:
                     continue
 
                 patchinfo = PatchInfo(
-                    schema_version=ProgramConfig.PATCHINFO_FILE_SCHEMA_VERSION,
+                    schema_version=ProgramConfig.patchinfo_file_schema_version,
                     patch_checksum=patch_checksum,
                     affected_files=patch_result.affected_files,
                 )
@@ -370,7 +370,7 @@ class GitPatcher:
                 FileChangeResult(
                     file_path=self._git_repo_dir.joinpath(entry.file_relative_path),
                     patch_path=patchinfo_file.with_suffix(
-                        f".{ProgramConfig.PATCH_FILE_EXT}"
+                        f".{ProgramConfig.patch_file_ext}"
                     ),
                     reason=ApplyReason.PATCH_REMOVED,
                     error=None,

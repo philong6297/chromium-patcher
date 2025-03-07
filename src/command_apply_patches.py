@@ -4,8 +4,8 @@ import sys
 from pathlib import Path
 from typing import List
 
-from config import ProgramConfig
-from patch_apply import FileChangeResult, GitPatcher
+from src.config import ProgramConfig
+from src.patch_apply import FileChangeResult, GitPatcher
 
 __all__ = ["command_apply_patches"]
 
@@ -64,22 +64,22 @@ def command_apply_patches(
     config: ProgramConfig, should_print_report: bool = False
 ) -> None:
     repo_dirs_list = "  - ".join(
-        f"{'/'.join(path)}{os.linesep}" for path in config.REPO_DIRS
+        f"{'/'.join(path)}{os.linesep}" for path in config.repo_dirs
     )
 
     _logger.info(
-        f"Apply patches from {config.PATCHES_DIR.as_posix()}{os.linesep}"
-        f"for Chromium-based project {config.CHROMIUM_SRC_DIR.as_posix()}{os.linesep}"
+        f"Apply patches from {config.patches_dir.as_posix()}{os.linesep}"
+        f"for Chromium-based project {config.chromium_src_dir.as_posix()}{os.linesep}"
         f"Repository directories:{os.linesep}"
         f"{repo_dirs_list}"
     )
 
     repo_mappings = [
         (
-            config.CHROMIUM_SRC_DIR.joinpath(*path),
-            config.PATCHES_DIR.joinpath(*path),
+            config.chromium_src_dir.joinpath(*path),
+            config.patches_dir.joinpath(*path),
         )
-        for path in config.REPO_DIRS
+        for path in config.repo_dirs
     ]
 
     result: List[FileChangeResult] = []

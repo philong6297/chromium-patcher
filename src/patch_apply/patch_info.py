@@ -7,7 +7,7 @@ from enum import IntEnum, unique
 from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 
-from config import ProgramConfig
+from src.config import ProgramConfig
 from src.util import calculate_file_checksum, validate_dict_keys_match_dataclass
 
 _logger = logging.getLogger(__name__)
@@ -80,7 +80,7 @@ class PatchInfo:
         affected_files: List of files modified by this patch
     """
 
-    schema_version: int = ProgramConfig.PATCHINFO_FILE_SCHEMA_VERSION
+    schema_version: int = ProgramConfig.patchinfo_file_schema_version
     patch_checksum: Optional[str] = None
     affected_files: List[AffectedFileData] = field(default_factory=list)
 
@@ -112,7 +112,7 @@ class PatchInfo:
 }"""
         try:
             with open(
-                patchinfo_file, "r", encoding=ProgramConfig.PATCHINFO_FILE_ENCODING
+                patchinfo_file, "r", encoding=ProgramConfig.patchinfo_file_encoding
             ) as file:
                 data: Any = json.load(file)
 
@@ -159,7 +159,7 @@ class PatchInfo:
         """
         try:
             with patchinfo_out_file.open(
-                mode="w", encoding=ProgramConfig.PATCHINFO_FILE_ENCODING
+                mode="w", encoding=ProgramConfig.patchinfo_file_encoding
             ) as out:
                 json.dump(asdict(self), out, indent=2)
         except Exception as err:
@@ -195,7 +195,7 @@ class PatchInfo:
             _logger.error(f"Error parsing .patchinfo file at {patchinfo_file}: {err}")
             return PatchInfoStaleStatus.PATCHINFO_OUTDATED
 
-        if patchinfo.schema_version != ProgramConfig.PATCHINFO_FILE_SCHEMA_VERSION:
+        if patchinfo.schema_version != ProgramConfig.patchinfo_file_schema_version:
             return PatchInfoStaleStatus.PATCHINFO_OUTDATED
 
         # Check if patch file changed
