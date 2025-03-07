@@ -17,10 +17,7 @@
       "type": "array",
       "description": "The list of repository subdirectories to be patched. Each directory must be relative to chromium_src_dir and use Posix style.",
       "items": {
-        "type": "array",
-        "items": {
-          "type": "string"
-        }
+        "type": "string"
       }
     },
     "patchinfo_file": {
@@ -42,21 +39,21 @@
           "description": "The extension of the patchinfo file. Default: .patchinfo",
           "default": ".patchinfo"
         }
-      },
-      "patch_file": {
-        "type": "object",
-        "description": "The configuration for the patch file.",
-        "properties": {
-          "ext": {
-            "type": "string",
-            "description": "The extension of the patch file. Default: .patch",
-            "default": ".patch"
-          },
-          "replacement_separator": {
-            "type": "string",
-            "description": "The replacement separator of the patch file. Default: -. For example, given base/win/embedded_i18n/create_string.cc, its patch will be base-win-embedded_i18n-create_string.cc.patch",
-            "default": "-"
-          }
+      }
+    },
+    "patch_file": {
+      "type": "object",
+      "description": "The configuration for the patch file.",
+      "properties": {
+        "ext": {
+          "type": "string",
+          "description": "The extension of the patch file. Default: .patch",
+          "default": ".patch"
+        },
+        "replacement_separator": {
+          "type": "string",
+          "description": "The replacement separator of the patch file. Default: -. For example, given base/win/embedded_i18n/create_string.cc, its patch will be base-win-embedded_i18n-create_string.cc.patch",
+          "default": "-"
         }
       }
     }

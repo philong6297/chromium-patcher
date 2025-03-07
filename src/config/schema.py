@@ -1,0 +1,67 @@
+# Copyright 2025 Phi-Long Le. All rights reserved.
+# Use of this source code is governed by a MIT license that can be
+# found in the LICENSE file.
+
+
+__all__ = ["CRPATCHER_SCHEMA"]
+# This file should be kept in sync with the schema in https://github.com/philong6297/crpatcher/blob/main/schema/crpatcher.json
+CRPATCHER_SCHEMA = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://github.com/philong6297/crpatcher/blob/main/schema/crpatcher.json",
+    "title": ".crpatcher config",
+    "description": "The .crpatcher file is a YAML file defining configuration for the crpatcher tool.",
+    "type": "object",
+    "properties": {
+        "chromium_src_dir": {
+            "type": "string",
+            "description": "The path to your Chromium-based src/ directory.",
+        },
+        "patches_dir": {
+            "type": "string",
+            "description": "The path to your patches directory, where you store your patches for Chromium-based submodules/third-party repos.",
+        },
+        "submodule_dirs": {
+            "type": "array",
+            "description": "The list of repository subdirectories to be patched. Each directory must be relative to chromium_src_dir and use Posix style.",
+            "items": {"type": "string"},
+        },
+        "patchinfo_file": {
+            "type": "object",
+            "description": "The configuration for the patchinfo file.",
+            "properties": {
+                "version": {
+                    "type": "number",
+                    "description": "The version of the patchinfo file. Default: 1",
+                    "default": 1,
+                },
+                "encoding": {
+                    "type": "string",
+                    "description": "The encoding of the patchinfo file. Default: utf-8",
+                    "default": "utf-8",
+                },
+                "ext": {
+                    "type": "string",
+                    "description": "The extension of the patchinfo file. Default: patchinfo",
+                    "default": "patchinfo",
+                },
+            },
+        },
+        "patch_file": {
+            "type": "object",
+            "description": "The configuration for the patch file.",
+            "properties": {
+                "ext": {
+                    "type": "string",
+                    "description": "The extension of the patch file. Default: patch",
+                    "default": "patch",
+                },
+                "replacement_separator": {
+                    "type": "string",
+                    "description": "The replacement separator of the patch file. Default: -. For example, given base/win/embedded_i18n/create_string.cc, its patch will be base-win-embedded_i18n-create_string.cc.patch",
+                    "default": "-",
+                },
+            },
+        },
+    },
+    "required": ["chromium_src_dir", "patches_dir", "submodule_dirs"],
+}

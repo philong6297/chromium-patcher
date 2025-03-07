@@ -3,7 +3,6 @@ include = [
 ]
 
 [formatting]
-array_auto_collapse = false
 compact_array = false
 column_width = 100
 # two space
