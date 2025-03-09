@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/philong6297/crpatcher/blob/main/schema/crpatcher.json",
+  "$id": "https://raw.githubusercontent.com/philong6297/crpatcher/refs/heads/main/schema/crpatcher.json",
   "title": ".crpatcher config",
   "description": "The .crpatcher file is a YAML file defining configuration for the crpatcher tool.",
   "type": "object",

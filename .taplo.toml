@@ -4,10 +4,10 @@ include = [
 
 [formatting]
 compact_array = false
-column_width = 100
+column_width = 80
 # two space
 indent_string = "  "
-line_width = 100
+line_width = 80
 trailing_newline = true
 # sort keys that are not separated by blank line
 reorder_keys = true

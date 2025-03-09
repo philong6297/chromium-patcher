@@ -8,7 +8,7 @@ from crpatcher.config.config import (
     ConfigYAMLError,
     ProgramConfig,
 )
-from crpatcher.config.schema import CRPATCHER_SCHEMA
+from crpatcher.config.schema import CRPATCHER_SCHEMA, PATCHINFO_SCHEMA
 
 __all__ = [
     "ConfigErrorBase",
@@ -16,4 +16,5 @@ __all__ = [
     "ConfigYAMLError",
     "ProgramConfig",
     "CRPATCHER_SCHEMA",
+    "PATCHINFO_SCHEMA",
 ]

@@ -9,8 +9,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from crpatcher.config import ProgramConfig
-from crpatcher.patch_apply.patch_info import AffectedFileData
-from crpatcher.patch_apply.patch_info import PatchInfoStaleStatus as StaleStatus
+from crpatcher.patch_apply import AffectedFileData, PatchInfoStaleStatus
 
 
 class PatchApplyReasonCreator:
@@ -24,8 +23,8 @@ class PatchApplyReasonCreator:
             f"The .{self._config.patch_file_ext} file was removed since last applied."
         )
 
-    def from_patchinfo_stale_status(self, status: StaleStatus) -> str:
-        """Convert a StaleStatus to a PatchApplyReason message.
+    def from_patchinfo_stale_status(self, status: PatchInfoStaleStatus) -> str:
+        """Convert a PatchInfoStaleStatus to a PatchApplyReason message.
 
         Args:
             status: The stale status to convert
@@ -34,26 +33,26 @@ class PatchApplyReasonCreator:
             string message explaining the status
 
         Raises:
-            ValueError: If the status is not a recognized StaleStatus value
+            ValueError: If the status is not a recognized PatchInfoStaleStatus value
         """
         match status:
-            case StaleStatus.NONE:
+            case PatchInfoStaleStatus.NONE:
                 return "None"
-            case StaleStatus.NO_PATCHINFO:
+            case PatchInfoStaleStatus.NO_PATCHINFO:
                 return f"No corresponding .{self._config.patchinfo_file_ext} file was found."
-            case StaleStatus.PATCHINFO_OUTDATED:
+            case PatchInfoStaleStatus.PATCHINFO_OUTDATED:
                 return (
                     f"The corresponding .{self._config.patchinfo_file_ext} file was unreadable "
                     f"or not in the correct schema version of {self._config.patchinfo_file_schema_version}."
                 )
-            case StaleStatus.PATCH_CHANGED:
+            case PatchInfoStaleStatus.PATCH_CHANGED:
                 return f"The .{self._config.patch_file_ext} file was modified since last applied."
-            case StaleStatus.SRC_CHANGED:
+            case PatchInfoStaleStatus.SRC_CHANGED:
                 return "The target file was modified since the patch was last applied."
 
         raise ValueError(
             f"Unknown stale status: {status}. "
-            f"Expected one of: {', '.join(s.name for s in StaleStatus)}"
+            f"Expected one of: {', '.join(s.name for s in PatchInfoStaleStatus)}"
         )
 
 

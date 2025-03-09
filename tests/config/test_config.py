@@ -9,11 +9,7 @@ from typing import Any
 import pytest
 import yaml
 
-from crpatcher.config.config import (
-    ConfigValidationError,
-    ConfigYAMLError,
-    ProgramConfig,
-)
+from crpatcher.config import ConfigValidationError, ConfigYAMLError, ProgramConfig
 
 
 @pytest.fixture
@@ -39,7 +35,7 @@ def valid_config_data() -> dict[str, Any]:
 def config_file(tmp_path: Path, valid_config_data: dict[str, Any]) -> Path:
     """Create a temporary config file with valid data."""
     config_path = tmp_path / ".crpatcher"
-    with open(config_path, "w", encoding="utf-8") as f:
+    with config_path.open("w", encoding="utf-8") as f:
         yaml.dump(valid_config_data, f)
     return config_path
 
@@ -66,7 +62,7 @@ def test_load_with_defaults(config_file: Path) -> None:
         "patches_dir": "patches",
         "submodule_dirs": ["one_level_dir", "two/level_dir", "three/level/dir"],
     }
-    with open(config_file, "w", encoding="utf-8") as f:
+    with config_file.open("w", encoding="utf-8") as f:
         yaml.dump(minimal_config, f)
 
     config = ProgramConfig.load(config_file)
@@ -92,7 +88,7 @@ def test_load_nonexistent_file() -> None:
 
 def test_load_invalid_yaml(config_file: Path) -> None:
     """Test loading a config file with invalid YAML."""
-    with open(config_file, "w", encoding="utf-8") as f:
+    with config_file.open("w", encoding="utf-8") as f:
         f.write("invalid: yaml: content: - - -")
 
     with pytest.raises(ConfigYAMLError) as exc_info:
@@ -106,7 +102,7 @@ def test_load_invalid_schema(config_file: Path) -> None:
         "patches_dir": "patches",  # Missing required field
         "submodule_dirs": "not_an_array",  # Wrong type
     }
-    with open(config_file, "w", encoding="utf-8") as f:
+    with config_file.open("w", encoding="utf-8") as f:
         yaml.dump(invalid_config, f)
 
     with pytest.raises(ConfigValidationError) as exc_info:
@@ -116,7 +112,7 @@ def test_load_invalid_schema(config_file: Path) -> None:
 
 def test_load_empty_file(config_file: Path) -> None:
     """Test loading an empty config file."""
-    with open(config_file, "w", encoding="utf-8") as f:
+    with config_file.open("w", encoding="utf-8") as f:
         f.write("")
 
     with pytest.raises(ConfigYAMLError) as exc_info:

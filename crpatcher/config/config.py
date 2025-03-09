@@ -3,15 +3,13 @@
 # found in the LICENSE file.
 
 import os
-from dataclasses import dataclass
+
+# from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Self
 
-import jsonschema.exceptions
 import yaml
-from jsonschema import validate
-
-from crpatcher.config.schema import CRPATCHER_SCHEMA
+from pydantic import BaseModel, Field, dataclass, field_validator
 
 __all__ = [
     "ProgramConfig",
@@ -39,6 +37,46 @@ class ConfigValidationError(ConfigErrorBase):
     pass
 
 
+class PatchInfoConfig(BaseModel):
+    """Configuration for patchinfo files."""
+
+    version: int = Field(default=1, description="Version of the patchinfo file format")
+    encoding: str = Field(default="utf-8", description="Encoding of the patchinfo file")
+    ext: str = Field(default="patchinfo", description="Extension of the patchinfo file")
+
+
+class PatchFileConfig(BaseModel):
+    """Configuration for patch files."""
+
+    ext: str = Field(default="patch", description="Extension of the patch file")
+    replacement_separator: str = Field(
+        default="-",
+        description="Separator used when converting file paths to patch filenames",
+    )
+
+
+class ConfigModel(BaseModel):
+    """Pydantic model for .crpatcher config file."""
+
+    chromium_src_dir: str = Field(description="Path to Chromium source directory")
+    patches_dir: str = Field(description="Path to patches directory")
+    submodule_dirs: list[str] = Field(
+        description="List of repository subdirectories to patch"
+    )
+    patchinfo_file: PatchInfoConfig = Field(default_factory=PatchInfoConfig)
+    patch_file: PatchFileConfig = Field(default_factory=PatchFileConfig)
+
+    @field_validator("chromium_src_dir", "patches_dir")
+    @classmethod
+    def validate_paths(cls, v: str) -> str:
+        """Validate that paths are not empty and don't start with /."""
+        if not v:
+            raise ValueError("Path cannot be empty")
+        if v.startswith("/"):
+            raise ValueError("Path cannot start with /")
+        return v
+
+
 @dataclass(frozen=True)
 class ProgramConfig:
     # Example: src/
@@ -50,7 +88,7 @@ class ProgramConfig:
     # List of repository subdirectories to be patched
     # Each repo dir should be relative to chromium_src_dir and use Posix style
     # Example: ["third_party", "search_engines_data", "resources"]
-    repo_dirs: list[list[str]]
+    repo_dirs: list[str]
 
     # Configuration for patchinfo files
     patchinfo_file_schema_version: int = 1
@@ -81,44 +119,33 @@ class ProgramConfig:
             OSError: For other file operation errors
         """
         config_file = Path(config_file)
-
         config_file_as_str = config_file.as_posix()
 
         if not config_file.is_file():
             raise FileNotFoundError(f"File not found: {config_file_as_str}")
 
-        with open(config_file, "r", encoding="utf-8") as f:
-            try:
-                config_data: dict[str, Any] = yaml.safe_load(f)
-            except yaml.YAMLError as e:
-                raise ConfigYAMLError(
-                    f"Invalid YAML format in {config_file_as_str}:{os.linesep}" f"{e}"
-                )
-
         try:
-            validate(instance=config_data, schema=CRPATCHER_SCHEMA)
-        except jsonschema.exceptions.ValidationError as e:
-            raise ConfigValidationError(
-                f"Config validation failed for {config_file_as_str}:{os.linesep}"
-                f"{e.message}"
+            with config_file.open("r", encoding="utf-8") as f:
+                config_data: dict[str, Any] = yaml.safe_load(f)
+        except yaml.YAMLError as e:
+            raise ConfigYAMLError(
+                f"Invalid YAML format in {config_file_as_str}:{os.linesep}" f"{e}"
             )
 
-        patchinfo_config = config_data.get("patchinfo_file", {})
-        patch_config = config_data.get("patch_file", {})
+        try:
+            config = ConfigModel.model_validate(config_data)
+        except Exception as e:
+            raise ConfigValidationError(
+                f"Config validation failed for {config_file_as_str}:{os.linesep}" f"{e}"
+            )
 
         return cls(
-            chromium_src_dir=Path(config_data["chromium_src_dir"]),
-            patches_dir=Path(config_data["patches_dir"]),
-            repo_dirs=config_data["submodule_dirs"],
-            patchinfo_file_schema_version=patchinfo_config.get(
-                "version", cls.patchinfo_file_schema_version
-            ),
-            patchinfo_file_encoding=patchinfo_config.get(
-                "encoding", cls.patchinfo_file_encoding
-            ),
-            patchinfo_file_ext=patchinfo_config.get("ext", cls.patchinfo_file_ext),
-            patch_file_ext=patch_config.get("ext", cls.patch_file_ext),
-            patch_file_replacement_separator=patch_config.get(
-                "replacement_separator", cls.patch_file_replacement_separator
-            ),
+            chromium_src_dir=Path(config.chromium_src_dir),
+            patches_dir=Path(config.patches_dir),
+            repo_dirs=config.submodule_dirs,
+            patchinfo_file_schema_version=config.patchinfo_file.version,
+            patchinfo_file_encoding=config.patchinfo_file.encoding,
+            patchinfo_file_ext=config.patchinfo_file.ext,
+            patch_file_ext=config.patch_file.ext,
+            patch_file_replacement_separator=config.patch_file.replacement_separator,
         )

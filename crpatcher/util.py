@@ -104,7 +104,7 @@ def calculate_file_checksum(file_path: Path, buffer_size: int = 8192) -> str:
 
     try:
         checksum_generator = hashlib.new("sha256")
-        with open(file_path, "rb") as file:
+        with file_path.open("rb") as file:
             while chunk := file.read(buffer_size):
                 checksum_generator.update(chunk)
         return checksum_generator.hexdigest()

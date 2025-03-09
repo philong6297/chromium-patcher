@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/philong6297/crpatcher/refs/heads/main/schema/patchinfo.json",
+  "title": ".patchinfo config",
+  "description": "Schema for .patchinfo files that store metadata about applied patches. Used by crpatcher.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "description": "Version of the patchinfo file format",
+      "minimum": 1
+    },
+    "patch_checksum": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "SHA-256 checksum of the patch file, or null if not calculated"
+    },
+    "affected_files": {
+      "type": "array",
+      "description": "List of files modified by this patch",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file_relative_path": {
+            "type": "string",
+            "description": "Path to the file relative to repository root"
+          },
+          "file_checksum": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "SHA-256 checksum of the file, or null if not calculated"
+          }
+        },
+        "required": [
+          "file_relative_path",
+          "file_checksum"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "patch_checksum",
+    "affected_files"
+  ]
+}
